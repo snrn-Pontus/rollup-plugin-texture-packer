@@ -1,5 +1,5 @@
 {
-  "name": "rollup-plugin-texture-packer",
+  "name": "@snrn/rollup-plugin-texture-packer",
   "private": false,
   "version": "1.0.0",
   "type": "module",

@@ -2,7 +2,7 @@
   "name": "@snrn/rollup-plugin-texture-packer",
   "author": "snrn",
   "private": false,
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "module",
   "publishConfig": {
     "access": "public",
@@ -20,16 +20,21 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsup src/rollup-plugin-texture-packer.ts  --dts --format esm,cjs --outDir dist --minify --clean",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/node": "^20.12.12",
     "prettier": "^3.2.5",
+    "rollup": "^4.18.0",
+    "rollup-plugin-typescript-paths": "^1.5.0",
+    "tslib": "^2.6.2",
+    "tsup": "^8.0.2",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vite-plugin-inspect": "^0.8.4",
-    "rollup": "^4.18.0"
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
   "dependencies": {
     "free-tex-packer-core": "^0.3.4",

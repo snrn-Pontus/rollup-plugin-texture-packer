@@ -6,8 +6,8 @@
 
 import {Plugin} from "rollup";
 import {packAsync, TexturePackerOptions} from "free-tex-packer-core";
-import * as fs from "node:fs/promises";
 import {glob} from "glob";
+import {promises as fs} from "fs";
 
 /**
  * The options for the Rollup plugin.
@@ -17,9 +17,9 @@ import {glob} from "glob";
  * @property {TexturePackerOptions[] | TexturePackerOptions} options - The options for the texture packer.
  */
 export type RollupPluginTexturePackerOptions = {
-  inputDir: string;
-  outputDir: string;
-  options?: TexturePackerOptions[] | TexturePackerOptions;
+    inputDir: string;
+    outputDir: string;
+    options?: TexturePackerOptions[] | TexturePackerOptions;
 };
 
 /**
@@ -29,65 +29,66 @@ export type RollupPluginTexturePackerOptions = {
  * @returns {Plugin} - The Rollup plugin.
  */
 export type RollupPluginTexturePacker = (
-  options: RollupPluginTexturePackerOptions,
+    options: RollupPluginTexturePackerOptions,
 ) => Plugin;
 
 const writeFile = async (name: string, buffer: Buffer, outputDir: string) => {
-  try {
-    await fs.writeFile(`${outputDir}/${name}`, buffer, {
-      encoding: "binary",
-    });
-  } catch (err) {
-    console.error(`Error writing file ${name}: ${err}`);
-  }
+    try {
+        await fs.writeFile(`${outputDir}/${name}`, buffer, {
+            encoding: "binary",
+        });
+    } catch (err) {
+        console.error(`Error writing file ${name}: ${err}`);
+    }
 };
 
 const findImages = async (
-  inputDir: string,
+    inputDir: string,
 ): Promise<
-  {
-    path: string;
-    contents: Buffer;
-  }[]
+    {
+        path: string;
+        contents: Buffer;
+    }[]
 > => {
-  const files = glob.sync("**/*.png", {
-    cwd: inputDir,
-  });
-  return Promise.all(
-    files.map(async (file) => {
-      console.info(`Found image: ${inputDir}/${file}`);
-      const contents = await fs.readFile(`${inputDir}/${file}`);
-      return {
-        path: file,
-        contents: Buffer.from(contents),
-      };
-    }),
-  );
+    const files = glob.sync("**/*.png", {
+        cwd: inputDir,
+    });
+    return Promise.all(
+        files.map(async (file) => {
+            console.info(`Found image: ${inputDir}/${file}`);
+            // const contents = await fs.promises.readFile(`${inputDir}/${file}`);
+            const contents = await fs.readFile(`${inputDir}/${file}`);
+            return {
+                path: file,
+                contents: Buffer.from(contents),
+            };
+        }),
+    );
 };
 
 const packImages = async ({
-  inputDir,
-  outputDir,
-  options,
-}: RollupPluginTexturePackerOptions) => {
-  const images = await findImages(inputDir);
+                              inputDir,
+                              outputDir,
+                              options,
+                          }: RollupPluginTexturePackerOptions) => {
+    const images = await findImages(inputDir);
 
-  const packer = async (option?: TexturePackerOptions) => {
-    try {
-      const files = await packAsync(images, option);
-      await Promise.all(
-        files.map((file) => writeFile(file.name, file.buffer, outputDir)),
-      );
-    } catch (error) {
-      console.error(error);
+    const packer = async (option?: TexturePackerOptions) => {
+        try {
+            const files = await packAsync(images, option);
+            await Promise.all(
+                files.map((file) => writeFile(file.name, file.buffer, outputDir)),
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    if (Array.isArray(options)) {
+        await Promise.all(options.map(packer));
+    } else {
+        await packer(options);
     }
-  };
-
-  if (Array.isArray(options)) {
-    await Promise.all(options.map(packer));
-  } else {
-    await packer(options);
-  }
 };
 
 /**
@@ -96,35 +97,35 @@ const packImages = async ({
  * @returns {Plugin} - The Rollup plugin.
  */
 const RollupPluginTexturePacker: RollupPluginTexturePacker = (options) => {
-  const packer = () => packImages(options);
+    const packer = () => packImages(options);
 
-  return {
-    name: "rollup-plugin-texture-packer",
+    return {
+        name: "rollup-plugin-texture-packer",
 
-    async configResolved() {
-      await packer();
-    },
+        async configResolved() {
+            await packer();
+        },
 
-    resolveId(source) {
-      if (source === "virtual-module") {
-        // this signals that Rollup should not ask other plugins or check
-        // the file system to find this id
-        return source;
-      }
-      return null; // other ids should be handled as usually
-    },
-    load(id) {
-      if (id === "virtual-module") {
-        // the source code for "virtual-module"
-        return 'export default "This is virtual!"';
-      }
-      return null; // other ids should be handled as usually
-    },
-  };
+        resolveId(source) {
+            if (source === "virtual-module") {
+                // this signals that Rollup should not ask other plugins or check
+                // the file system to find this id
+                return source;
+            }
+            return null; // other ids should be handled as usually
+        },
+        load(id) {
+            if (id === "virtual-module") {
+                // the source code for "virtual-module"
+                return 'export default "This is virtual!"';
+            }
+            return null; // other ids should be handled as usually
+        },
+    };
 };
 
-export * from "./TexturePackerEnums.ts";
+export * from "./TexturePackerEnums";
 
-export type { TexturePackerOptions };
+export type {TexturePackerOptions};
 
 export default RollupPluginTexturePacker;

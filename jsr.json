@@ -1,6 +1,6 @@
 {
   "name": "@snrn/rollup-plugin-texture-packer",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "exports": "./src/rollup-plugin-texture-packer.ts",
   "publish": {
     "include": [

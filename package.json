@@ -2,7 +2,7 @@
   "name": "@snrn/rollup-plugin-texture-packer",
   "author": "snrn",
   "private": false,
-  "version": "1.0.7",
+  "version": "1.0.8",
   "type": "module",
   "publishConfig": {
     "access": "public",

@@ -1,11 +1,16 @@
 {
   "name": "@snrn/rollup-plugin-texture-packer",
+  "author": "snrn",
   "private": false,
   "version": "1.0.5",
   "type": "module",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snrn-Pontus/rollup-plugin-texture-packer.git"
   },
   "keywords": [
     "rollup-plugin",
